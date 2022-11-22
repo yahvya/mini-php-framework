@@ -1,0 +1,1 @@
+add_library(COMMANDS parser.c)

@@ -1,0 +1,12 @@
+{
+	"autoload" : 
+	{
+		"psr-4" : 
+		{
+			"App\\" : "src\\app",
+			"Controller\\" : "src\\controller",
+			"Middleware\\" : "src\\middleware",
+			"Model\\" : "src\\model"
+		}
+	}
+}
