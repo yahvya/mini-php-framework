@@ -10,20 +10,17 @@ int main(int argc,char* argv[])
 
 	void (*commands_list[COUNT_OF_COMMANDS])COMMAND_ARGS = {
 		make_controller,
-		make_model,
-		export_routes
+		make_model
 	};
 
 	const char* linked_names[COUNT_OF_COMMANDS] = {
 		"make:controller",
-		"make:model",
-		"export:routes"
+		"make:model"
 	};
 
 	const char* linked_descriptions[COUNT_OF_COMMANDS] = {
 		"Crée un controlleur dans le dossier des controlleurs",
-		"Crée un modèle dans le dossier des modèles",
-		"Exporte les routes sous format json -h pour plus d'informations"
+		"Crée un modèle dans le dossier des modèles"
 	};
 
 	if(argc >= 3)
