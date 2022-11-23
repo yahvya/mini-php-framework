@@ -1,0 +1,3 @@
+FILE(GLOB SOURCES *.c)
+
+add_library(UTILS ${SOURCES})
