@@ -44,7 +44,7 @@ int main(int argc,char* argv[])
 		
 		print_help(linked_names,linked_descriptions);
 	}
-	else printf("<< Sabo ;) Veuillez saisir un commande --help pour afficher la liste des commandes >>\n");
+	else printf("<< Sabo ;) Veuillez saisir --help pour afficher la liste des commandes >>\n");
 
 	return 0;
 }

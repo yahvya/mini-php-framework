@@ -1,0 +1,11 @@
+<?php
+
+$args_as_str = implode(' ',array_slice($argv,1) );
+
+$root = __DIR__ . '/../';
+$bin = __DIR__ . '/sabo_bin';
+
+exec("$bin $root $args_as_str",$outputs);
+
+foreach($outputs as $ouput)
+	echo "{$ouput}\n\r"; 
