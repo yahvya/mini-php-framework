@@ -11,7 +11,7 @@ add customized commands to sabo step
   - the class have to extends AbstractCommand and implements
     - public static function exec_command(int $argc, array $argv, string $project_root_path):void which will be called to execute your command
     - redefine public static function print_args():void to print your own arguments
-  - finaly add in bin/sabo file
+  - finally add in bin/sabo file
   - use \Sabo\YourClass;
   - AbstractCommand::add_command("your_command_name",YourClass::class,"your command description");
    
