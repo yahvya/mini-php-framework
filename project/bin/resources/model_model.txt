@@ -1,0 +1,9 @@
+<?php
+
+namespace Model\Model;
+
+class {model_name} extends AbstractModel
+{
+	
+}
+
