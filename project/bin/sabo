@@ -11,6 +11,7 @@ use \Sabo\RouteExporter;
 AbstractCommand::add_command("make:controller",ControllerMaker::class,"Permet de créer un controller");
 AbstractCommand::add_command("make:model",ModelMaker::class,"Permet de créer un model");
 AbstractCommand::add_command("export:routes",RouteExporter::class,"Permet d'exporter les routes (config/routes.php) sous format json");
+// add your commands here
 
 
 // try to exec command

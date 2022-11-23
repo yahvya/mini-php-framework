@@ -4,7 +4,7 @@ namespace Sabo;
 
 abstract class ModelMaker extends AbstractCommand
 {
-	public static function exec_command(int $argc, array $argv, string $project_root_path): void
+	public static function exec_command(int $argc, array $argv, string $project_root_path):void
 	{
 		if($argc < 1)
 		{
