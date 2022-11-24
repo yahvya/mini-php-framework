@@ -21,7 +21,6 @@ use \Controller\Controller\ArticleController;
 
 return Route::generate_from([
 	Route::group("article",[
-		Route::get("{article_id}/view",ArticleController::class,"show_article","an_article_page"),
-		Route::get("{article_id}/edit",ArticleController::class,"show_article_edit","edit_article_page"),
+		Route::get("{article_name}/view",ArticleController::class,"show_article","an_article_page"),
 	])
 ]);

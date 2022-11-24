@@ -46,7 +46,7 @@ abstract class Route
 		return $results;
 	}
 
-	public static function group(string $group_link_prefix,Array $routes_list):array
+	public static function group(string $group_link_prefix,array $routes_list):array
 	{	
 		if(substr($group_link_prefix,-1) != "/")
 			$group_link_prefix .= "/";
@@ -71,7 +71,7 @@ abstract class Route
 		return $group;
 	}
 
-	public static function generate_from(Array $routes_data_list):array
+	public static function generate_from(array $routes_data_list):array
 	{
 		$results = [
 			"routes_names" => [],
@@ -118,7 +118,7 @@ abstract class Route
 			"method" => $method,
 			"route_name" => $route_name,
 			"route" => $route,
-			"route_regex" => "\/?" . str_replace("?","\?",preg_replace("#\{[a-zA-Z\_]+\}#","(.+)",$route) ),
+			"route_regex" => "\/?" . str_replace("?","\?",preg_replace("#\{[a-zA-Z\_]+\}#","(.+)",$route) ) . "\/.?",
 			"controller_class" => $controller_class,
 			"method_name" => $method_name
 		];

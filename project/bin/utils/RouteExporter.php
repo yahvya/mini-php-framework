@@ -8,6 +8,8 @@ abstract class RouteExporter extends AbstractCommand
 	{
 		$complete_path = $argc >= 1 ? $argv[0] : "{$project_root_path}export_routes.json";
 
+		require_once("{$project_root_path}/vendor/autoload.php");
+
 		$routes = require_once("{$project_root_path}config/routes.php");
 
 		if(@file_put_contents($complete_path,json_encode($routes,JSON_PRETTY_PRINT) ) )

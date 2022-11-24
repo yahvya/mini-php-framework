@@ -6,6 +6,7 @@
 			"Sabo\\Sabo\\" : "sabo\\sabo",
 			"Sabo\\Helper\\" : "sabo\\helpers",
 			"Sabo\\Interface\\" : "sabo\\interfaces",
+			"Sabo\\Custom\\" : "sabo\\custom",
 			"Controller\\Controller\\" : "src\\controller\\controller",
 			"Model\\Model\\" : "src\\model\\model"
 		}

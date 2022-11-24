@@ -10,6 +10,8 @@ use \Sabo\Interface\MaintenanceManagerInterface;
 
 use \Sabo\Helper\FileHelper;
 
+use \Sabo\Custom\RouteCustomExtensions;
+
 class Router
 {
 	public const CLASSIC_ENV = 0;
@@ -67,10 +69,10 @@ class Router
 		if(!$routes)
 			$this->internal_error($debug_mode,"Failed to load routes",$internal_error_page_manager);
 
-		$this->start_site($routes,$page_not_found_manager);
+		$this->start_site($routes,$page_not_found_manager,$debug_mode);
 	}
 
-	private function start_site(array $routes,?ShowableInterface $page_not_found_manager = NULL):void
+	private function start_site(array $routes,?ShowableInterface $page_not_found_manager,bool $debug_mode):void
 	{
 		$request_method = strtolower($_SERVER["REQUEST_METHOD"]);
 
@@ -111,11 +113,14 @@ class Router
 						$arg_name = $reflection_parameter->getName();
 
 						if(isset($method_params[$arg_name]) )
-							array_push($args,$method_params[$arg_name]);
+							array_push($args,urldecode($method_params[$arg_name]) );
 					}
 
 					// call the controller and the method with the args from url
-					call_user_func_array([new $controller_class(),$method_name],$args);
+					call_user_func_array(
+						[new $controller_class($routes["routes_names"],$debug_mode),$method_name],
+						$args
+					);
 
 					die();
 				}

@@ -4,14 +4,9 @@ namespace Controller\Controller;
 
 class ArticleController extends AbstractController
 {
-	public function show_article(int $article_id):void
+	public function show_article(mixed $article_name):void
 	{
-		echo "affichage article $article_id";
-	}	
-
-	public function show_article_edit($article_id):void
-	{
-		echo "page edit $article_id";
+		$this->render("article.twig",["article_name" => $article_name]);
 	}
 }
 
