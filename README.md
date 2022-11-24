@@ -41,3 +41,5 @@ Routes and Assets in view
         - if not found it will search in public/css for a css type or public/js for a js file 
         
           example: this->render("article/article.twig"); the search will start in views/templates/article/css/ or views/templates/articles/js/
+
+controllers extends route function too with $this->route("route_name",@optionnal["name" => "replace"]);
