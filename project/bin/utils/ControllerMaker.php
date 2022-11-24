@@ -13,7 +13,6 @@ abstract class ControllerMaker extends AbstractCommand
 			return;
 		}
 
-
 		$controller_name = $argv[0];
 
 		// change name to correct format NameController
