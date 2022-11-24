@@ -9,5 +9,8 @@
 			"Controller\\Controller\\" : "src\\controller\\controller",
 			"Model\\Model\\" : "src\\model\\model"
 		}
+	},
+	"require": {
+		"twig/twig": "^3.4"
 	}
 }
