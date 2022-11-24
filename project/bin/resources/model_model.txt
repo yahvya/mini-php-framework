@@ -2,8 +2,13 @@
 
 namespace Model\Model;
 
+use \Model\Attribute\TableName;
+use \Model\Attribute\TableColumn;
+
+#[TableName("{table_name}")]
 class {model_name} extends AbstractModel
 {
-	
+	#[TableColumn("id","int",TableColumn::PRIMARY_KEY,TableColumn::AUTO_INCREMENT)]
+	private int $id;
 }
 

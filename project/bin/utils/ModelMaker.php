@@ -16,9 +16,11 @@ abstract class ModelMaker extends AbstractCommand
 
 		$model_name = $argv[0];
 
+		$basename = $model_name;
+
 		// change name to correct format NameModel
 
-		$model_name[0] = strtoupper($model_name[0]);
+		$model_name = implode("",array_map(fn(string $part):string => ucfirst($part),explode("_",$model_name)) );
 
 		if(str_ends_with($model_name,"model") )
 			$model_name = str_replace("model","Model",$model_name);
@@ -36,7 +38,10 @@ abstract class ModelMaker extends AbstractCommand
 
 		$models_model = @file_get_contents(__DIR__ . "/../resources/model_model.txt");
 
-		if($models_model != false && @file_put_contents($path,str_replace("{model_name}",$model_name,$models_model) ) )
+		$searches = ["{model_name}","{table_name}"];
+		$replaces = [$model_name,$basename];
+
+		if($models_model != false && @file_put_contents($path,str_replace($searches,$replaces,$models_model) ) )
 			self::print_tool_message("le model a bien été crée sur le chemin ({$path})");
 		else
 			self::print_tool_message("une erreur s'est produite lors de la création",":(");
