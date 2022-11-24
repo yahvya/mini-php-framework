@@ -16,7 +16,8 @@ add customized commands to sabo step
   - finally add in bin/sabo file
   - use \Sabo\YourClass;
   - AbstractCommand::add_command("your_command_name",YourClass::class,"your command description");
-   
+  
+you can customize the make:controller controller format by updating bin/resources/controller_model.txt same for the make:model
  
 Views
 
