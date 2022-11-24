@@ -3,6 +3,7 @@
 namespace Controller\Controller;
 
 use \Sabo\Custom\RouteCustomExtensions;
+use \Sabo\Custom\AssetCustomExtension;
 
 use \Twig\Loader\FilesystemLoader;
 
@@ -10,9 +11,11 @@ use \Twig\Environment;
 
 abstract class AbstractController
 {
-	protected array $view_start_path = [ROOT . "views/templates/"];
+	protected string $view_start_path = ROOT . "views/templates/";
 
 	protected string $cache_path = ROOT . "views/cache/";
+
+	private bool $debug_mode;
 
 	private FilesystemLoader $twig_loader;
 
@@ -36,6 +39,15 @@ abstract class AbstractController
 
 	protected function render(string $file,array $view_data = []):void
 	{
+		$file_parts = explode("/",$file);
+
+		$dirpath = str_replace(ROOT,"",$this->view_start_path) . implode("/",array_slice($file_parts,0,count($file_parts) - 1) );
+
+		if(!str_ends_with($dirpath,"/") )
+			$dirpath .= "/";
+
+		$this->twig_environment->addExtension(new AssetCustomExtension($dirpath,$this->debug_mode) );
+
 		die($this->twig_environment->render($file,$view_data));
 	}
 
@@ -54,5 +66,10 @@ abstract class AbstractController
 	protected function get_twig_environment():Environment
 	{
 		return $this->twig_environment;
+	}
+
+	protected function get_debug_mode():bool
+	{
+		return $this->debug_mode;
 	}
 }

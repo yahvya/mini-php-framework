@@ -32,7 +32,7 @@ class RouteCustomExtensions extends AbstractExtension
 		$route = !empty($this->routes_list[$route_name]) ? $this->routes_list[$route_name] : "";
 
 		foreach($replaces as $to_replace => $replace)
-			$route = str_replace($to_replace,$replace,$route);
+			$route = str_replace("{{$to_replace}}",$replace,$route);
 
 		if(empty($route) && $this->debug_mode)
 			throw new Exception("Route $route_name not exist");
