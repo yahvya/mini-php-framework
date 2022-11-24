@@ -14,7 +14,7 @@ abstract class ModelMaker extends AbstractCommand
 		}
 
 
-		$model_name = $argv[0];
+		$model_name = strtolower($argv[0]);
 
 		$basename = $model_name;
 

@@ -6,5 +6,7 @@ use \PDO;
 
 abstract class AbstractModel 
 {
+	private static PDO $shared_con;
+
 	
 }

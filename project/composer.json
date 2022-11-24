@@ -9,7 +9,9 @@
 			"Sabo\\Custom\\" : "sabo\\custom",
 			"Controller\\Controller\\" : "src\\controller\\controller",
 			"Model\\Model\\" : "src\\model\\model",
-			"Model\\Attribute\\" : "src\\model\\attributes"
+			"Model\\Attribute\\" : "src\\model\\attributes",
+			"Model\\Interface\\" : "src\\model\\interfaces",
+			"Model\\Cond\\" : "src\\model\\conds"
 		}
 	},
 	"require": {
