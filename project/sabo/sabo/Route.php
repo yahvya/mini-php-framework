@@ -6,21 +6,21 @@ use \Exception;
 
 abstract class Route
 {
-	private const AUTHORIZED_METHODS = ["get","post","put"];
+	public const AUTHORIZED_METHODS = ["get","post","put"];
 
 	public static function get(string $route,string $controller_class,string $method_name,string $route_name):array
 	{
-		return Route::get_route_from("get",$route,$controller_class,$method_name,$route_name);
+		return self::get_route_from("get",$route,$controller_class,$method_name,$route_name);
 	}
 
 	public static function post(string $route,string $controller_class,string $method_name,string $route_name):array
 	{
-		return Route::get_route_from("post",$route,$controller_class,$method_name,$route_name);
+		return self::get_route_from("post",$route,$controller_class,$method_name,$route_name);
 	}
 
 	public static function put(string $route,string $controller_class,string $method_name,string $route_name):array
 	{
-		return Route::get_route_from("put",$route,$controller_class,$method_name,$route_name);
+		return self::get_route_from("put",$route,$controller_class,$method_name,$route_name);
 	}
 
 	public static function multiple(string $methods,string $route,string $controller_class,string $method_name,array $route_names):array
@@ -37,10 +37,10 @@ abstract class Route
 		{
 			$method = strtolower($method);
 
-			if(!in_array($method,Route::AUTHORIZED_METHODS) )
+			if(!in_array($method,self::AUTHORIZED_METHODS) )
 				throw new Exception("unknown method given");
 
-			array_push($results,Route::get_route_from($method,$route,$controller_class,$method_name,$route_names[$key]) );
+			array_push($results,self::get_route_from($method,$route,$controller_class,$method_name,$route_names[$key]) );
 		}
 
 		return $results;
@@ -57,7 +57,7 @@ abstract class Route
 		{
 			if(!empty($route_data["method"]) )
 			{
-				array_push($group,Route::get_route_from(
+				array_push($group,self::get_route_from(
 					$route_data["method"],
 					empty($route_data["route"]) ? substr($group_link_prefix,0,-1) : $group_link_prefix . $route_data["route"],
 					$route_data["controller_class"],
@@ -65,7 +65,7 @@ abstract class Route
 					$route_data["route_name"]
 				) );
 			}
-			else $group = array_merge($group,Route::group($group_link_prefix,$route_data) );
+			else $group = array_merge($group,self::group($group_link_prefix,$route_data) );
 		}
 
 		return $group;
@@ -86,7 +86,7 @@ abstract class Route
 		{
 			if(!isset($route_data["route_name"]) )
 			{
-				$result = Route::generate_from($route_data);
+				$result = self::generate_from($route_data);
 
 				$results["routes_names"] = array_merge($results["routes_names"],$result["routes_names"]);
 				$results["routes"]["post"] = array_merge($results["routes"]["post"],$result["routes"]["post"]);
@@ -118,7 +118,7 @@ abstract class Route
 			"method" => $method,
 			"route_name" => $route_name,
 			"route" => $route,
-			"route_regex" => str_replace("?","\?",preg_replace("#\{[a-zA-Z\_]+\}#","(.+)",$route) ),
+			"route_regex" => "\/?" . str_replace("?","\?",preg_replace("#\{[a-zA-Z\_]+\}#","(.+)",$route) ),
 			"controller_class" => $controller_class,
 			"method_name" => $method_name
 		];

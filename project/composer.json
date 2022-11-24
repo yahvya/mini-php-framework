@@ -5,6 +5,7 @@
 		{
 			"Sabo\\Sabo\\" : "sabo\\sabo",
 			"Sabo\\Helper\\" : "sabo\\helpers",
+			"Sabo\\Interface\\" : "sabo\\interfaces",
 			"Controller\\Controller\\" : "src\\controller\\controller",
 			"Model\\Model\\" : "src\\model\\model"
 		}
