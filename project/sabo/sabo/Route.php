@@ -118,7 +118,7 @@ abstract class Route
 			"method" => $method,
 			"route_name" => $route_name,
 			"route" => $route,
-			"route_regex" => "\/?" . str_replace("?","\?",preg_replace("#\{[a-zA-Z\_]+\}#","(.+)",$route) ) . "\/.?",
+			"route_regex" => "\/?" . str_replace("?","\?",preg_replace("#\{[a-zA-Z\_]+\}#","(.+)",$route) ) . "\/?",
 			"controller_class" => $controller_class,
 			"method_name" => $method_name
 		];
