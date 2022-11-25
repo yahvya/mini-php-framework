@@ -25,5 +25,16 @@ class ArticleModel extends AbstractModel
 		ColumnCond(new RegexCond("^.{10,}$","Le contenu de l'article doit contenir au moins 10 caractères") )
 	]
 	protected string $article_content;
+
+	protected static function get_object_from_row(array $row):self
+	{
+		$article_model = new ArticleModel();
+
+		$article_model->id = $row["id"];
+		$article_model->article_title = $row["article_title"];
+		$article_model->article_content = $row["article_content"];
+
+		return $article_model;
+	}
 }
 

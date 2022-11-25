@@ -14,5 +14,14 @@ class {model_name} extends AbstractModel
 	// table columns attribute have to be protected
 	#[TableColumn("id","int",TableColumn::PRIMARY_KEY,TableColumn::AUTO_INCREMENT)]
 	protected int $id;
+
+	protected static function get_object_from_row(array $row):self
+	{
+		${table_name}_model = new {model_name}();
+
+		${table_name}_model->id = $row["id"];
+
+		return ${table_name}_model;
+	}
 }
 

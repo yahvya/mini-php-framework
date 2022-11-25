@@ -50,7 +50,7 @@ abstract class AbstractModel
 		return false;
 	}
 
-	// return an connexion instance
+	// return an connexion instance with fetch default mode assoc
 	public static function get_con():?PDO
 	{
 		switch(CONFIG_FILE_TYPE)
@@ -126,6 +126,70 @@ abstract class AbstractModel
 
 		return false;
 	}	
+
+	/*
+		must be called with the model itself ArticleModel::find()
+		conds format -> [property => value] if cond if empty it will select * | keys will not be verifed
+		cannot return object if the fetch mode is set
+	*/
+	public function find(array $conditions = [],bool $return_objects = true,bool $just_one = false,bool $use_like = false,?int $fetch_mode = NULL):array
+	{
+		if(__CLASS__ == self::class)
+			return [];
+
+		$model_instance = (new ReflectionClass(__CLASS__))->newInstance();
+
+		$result = [];
+
+		try
+		{
+			$to_bind = [];
+
+			if(!empty($conditions) )
+			{
+				$conds = [];
+
+				foreach($conditions as $property_name => $condition_value)
+				{
+					if(!$use_like)
+						array_push($conds,"{$model_instance->properties_data[$property_name]["linked_col_name"]} LIKE :{$property_name}");
+					else
+						array_push($conds,"{$model_instance->properties_data[$property_name]["linked_col_name"]}=:{$property_name}");
+
+					$to_bind[":{$property_name}"] = $condition_value;
+				}
+
+				$conds = implode(" and ",$conds);
+
+				if($just_one)
+					$query = self::$shared_con->prepare("select * {$model_instance->table_name} where $conds limit 1");
+				else
+					$query = self::$shared_con->prepare("select * {$model_instance->table_name} where $conds");
+			}
+			elseif($just_one)
+				$query = self::$shared_con->prepare("select * from {$model_instance->table_name} limit 1");
+			else
+				$query = self::$shared_con->prepare("select * from {$model_instance->table_name}");
+
+			if($query != false && $query->execute($to_bind) )
+			{
+				if($fetch_mode == NULL)
+				{
+					if($return_objects)
+						$result = array_map(fn(array $row_data):AbstractModel => __CLASS__::get_object_from_row($row_data),$query->fetchAll() );
+					else 
+						$result = $query->fetchAll();
+				}
+				else $result = $query->fetchAll($fetch_mode);
+			}
+		}
+		catch(PDOException)
+		{
+			$result = [];
+		}
+
+		return $result;
+	}
 
 	// throw exception is model is badly formed
 	public function __construct(?PDO $con = NULL)
@@ -281,9 +345,10 @@ abstract class AbstractModel
 			return false;
 
 		$query = $this->con->prepare("insert into {$this->table_name}({$to_insert}) values({$markers})");
+
 		try
 		{
-			if($query->execute($to_bind) )
+			if($query != false && $query->execute($to_bind) )
 			{
 				if(count($this->primary_keys) == 1)
 					$this->{$this->primary_keys[0]} = $this->con->lastInsertId();
@@ -320,7 +385,7 @@ abstract class AbstractModel
 
 			$query = $this->con->prepare("delete from $this->table_name where $conds");
 
-			return $query->execute($to_bind);
+			return $query != false && $query->execute($to_bind);
 		}
 		catch(PDOException){}
 
@@ -359,10 +424,19 @@ abstract class AbstractModel
 
 			$query = $this->con->prepare("update $this->table_name set $to_set where $conds");
 
-			return $query->execute($to_bind);
+			return $query != false && $query->execute($to_bind);
 		}
 		catch(PDOException){}
 
 		return false;
 	}
+
+	public function set_con(PDO $con):void
+	{
+		$this->con = $con;
+	}
+
+	// abstract functions
+
+	abstract protected static function get_object_from_row(array $row):AbstractModel;
 }
