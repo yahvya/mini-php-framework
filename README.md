@@ -1,6 +1,10 @@
 # mini-php-framework
 mini php framework require php 8, see the example_project to learn how to use it and clone the an-inital-project to start empty project
 
+to clone just the initial folder you can use this tool
+
+https://github.com/yahvya/download_part_of_git_repo
+
 SABO
 
 come with a small cli tool named sabo 
