@@ -75,4 +75,9 @@ abstract class AbstractController
 	{
 		return $this->debug_mode;
 	}
+
+	protected function get_route_custom_extension():RouteCustomExtensions
+	{
+		return $this->route_custom_extension;
+	}
 }
