@@ -1,0 +1,11 @@
+body
+{
+	background-color: lightgrey;
+	color: black;
+}
+
+.error
+{
+	text-align: center;
+	color: red;
+}
