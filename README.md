@@ -1,5 +1,5 @@
 # mini-php-framework
-mini php framework
+mini php framework require php 8, see the example_project to learn how to use it and clone the an-inital-project to start empty project
 
 SABO
 
@@ -44,3 +44,54 @@ Routes and Assets in view
           example: this->render("article/article.twig"); the search will start in views/templates/article/css/ or views/templates/articles/js/
 
 controllers extends route function too with $this->route("route_name",@optionnal["name" => "replace"]);
+
+Controller
+
+you can create a controller using php ./bin/sabo make:controller controller_name and customize the default controller model by changing bin/resources/controller_model.txt
+
+a controller have to extends AbstractController
+
+if you redefine the construct -> __construct($routes_names,$debug_mode) be sure to past params to the parent using parent::__construct($routes_names,$debug_mode);
+
+render to render your view (you can past data to twig with the second optionnal parameter)
+
+redirect with take a route to redirect (can be combine with routes to get a route -> $this->redirect($this->route("route_name")); )
+
+
+Models
+
+you can create a model using php ./bin/sabo make:model model_name and customize the default model model by changing bin/resources/model_model.txt
+
+models support mysql you have to use INNODB stockage engine to use models transaction
+
+a model have to
+  
+  - extends AbstractModel
+  
+  - use the TableName attribute to define the linked table name in database (already do if you use sabo)
+  
+  - implements the abstract method get_object_from_row which have to return this model instance with a row from database
+  
+a model property have to
+
+  - use the TableColumn attribute if linked to the table column and be public/protected to describe the column
+  - to put conditions when a linked property is going to be set, use the attribute ColumnCond (RegexCond is available but you can create your own Cond by implementing the CondInterface)
+  
+  Env file 
+  
+  the env file have to 
+  
+    - be .env or a env.json located in config folder
+  
+    - contain the maintenance state of the site (maintenance=true)
+    - database datas
+    
+ the default configuration use env.json
+ 
+ to use .env modify in index.php
+ 
+ define("CONFIG_FILE_TYPE",Router::JSON_ENV) to define("CONFIG_FILE_TYPE",Router::CLASSIC_ENV);
+ 
+ 
+ 
+ 
