@@ -8,5 +8,5 @@
 
 {% block body %}
 	<p>Bienvenue sur la page de l'article numéro {{ article_name }}</p>
-	<p>Lien vers un autre article : {{ route("an_article_page",{"article_name" : "autre article"}) }}</p>
+	<p>Lien vers un autre article : {{ route("Article:show_article",{"article_name" : "autre article"}) }}</p>
 {% endblock %}

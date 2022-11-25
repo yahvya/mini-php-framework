@@ -53,6 +53,9 @@ abstract class AbstractController
 
 	protected function redirect(string $link = "/"):void
 	{
+		if($link[0] != "/")
+			$link = "/{$link}";
+
 		header("Location: $link");
 
 		die();

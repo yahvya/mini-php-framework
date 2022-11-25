@@ -12,7 +12,7 @@ use \Controller\Controller\ArticleController;
 		l
 		controller_class -> YourController::class
 		method_name -> your_method_name
-		route_name -> a name for the route (two routes can"t have the same name)
+		route_name -> a name for the route (two routes can't have the same name)
 
 	each routes in a group start with the group routes
 */		
@@ -21,6 +21,7 @@ use \Controller\Controller\ArticleController;
 
 return Route::generate_from([
 	Route::group("article",[
-		Route::get("{article_name}/view",ArticleController::class,"show_article","an_article_page"),
+		Route::get("{article_name}/view",ArticleController::class,"show_article","Article:show_article"),
+		Route::multiple("get,post","create",ArticleController::class,"create_article",["Article:creation_page","Article:confirm_creation"])
 	])
 ]);

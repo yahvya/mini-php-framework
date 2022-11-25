@@ -11,7 +11,8 @@ use \Model\Cond\RegexCond;
 #[TableName("{table_name}")]
 class {model_name} extends AbstractModel
 {
+	// table columns attribute have to be protected
 	#[TableColumn("id","int",TableColumn::PRIMARY_KEY,TableColumn::AUTO_INCREMENT)]
-	private int $id;
+	protected int $id;
 }
 

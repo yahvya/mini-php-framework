@@ -11,7 +11,8 @@
 			"Model\\Model\\" : "src\\model\\model",
 			"Model\\Attribute\\" : "src\\model\\attributes",
 			"Model\\Interface\\" : "src\\model\\interfaces",
-			"Model\\Cond\\" : "src\\model\\conds"
+			"Model\\Cond\\" : "src\\model\\conds",
+			"Model\\Exception\\" : "src\\model\\exceptions"
 		}
 	},
 	"require": {

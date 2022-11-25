@@ -12,6 +12,8 @@ use \Sabo\Sabo\Router;
 
 use \Model\Attribute\TableColumn;
 
+use \Model\Exception\ModelException;
+
 use \Model\Cond\ColumnCond;
 
 // models are based on mysql
@@ -112,5 +114,57 @@ abstract class AbstractModel
 
 			$this->properties_data[$property_name]['cond'] =  $count == 0 ? NULL : $conds_attribute[0]->newInstance();
 		}
+	}
+
+	// return false if try to valid an auto increment primary key, true if success or the error message from the failed cond
+	protected function data_is_valid_for_attribute(string $attribute_name,mixed $data):bool|string
+	{
+		if
+		(
+			!empty($this->properties_data[$attribute_name]) &&
+			(
+				!$this->properties_data[$attribute_name]['is_primary'] ||
+				!$this->properties_data[$attribute_name]['is_auto_increment']
+			) 
+		)
+		{
+			if($this->properties_data[$attribute_name]['cond'] != NULL)
+			{
+				if($this->properties_data[$attribute_name]['cond']->is_valid($data) )
+					return true;
+				else
+					return $this->properties_data[$attribute_name]['cond']->get_error_message();
+			}
+			else return true;
+		}
+		
+		return false;
+	}
+
+	// throw a ModelException is failed to set
+	public function set_column(string $attribute_name,mixed $data):self
+	{
+		$check_result = $this->data_is_valid_for_attribute($attribute_name,$data);
+
+		if($check_result === true)
+		{
+			$this->$attribute_name = $data;
+
+			return $this;
+		}
+
+		if($check_result === false)
+			throw new ModelException("An autoincrement primary key can't be set",false);
+		else
+			throw new ModelException($check_result);
+	}
+
+	// return null if attribute not found or empty
+	public function get_column(string $attribute_name):mixed
+	{
+		if(!empty($this->properties_data[$attribute_name]) && !empty($this->$attribute_name) )
+			return $this->$attribute_name;
+
+		return NULL;
 	}
 }

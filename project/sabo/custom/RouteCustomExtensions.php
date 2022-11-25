@@ -37,6 +37,9 @@ class RouteCustomExtensions extends AbstractExtension
 		if(empty($route) && $this->debug_mode)
 			throw new Exception("Route $route_name not exist");
 
+		if(!empty($route) && $route[0] != "/")
+			$route = "/{$route}";
+
 		return $route;
 	}
 }
