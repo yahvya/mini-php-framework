@@ -1,9 +1,0 @@
-<?php
-
-namespace Controller\Controller;
-
-class {controller_name} extends AbstractController
-{
-	
-}
-
