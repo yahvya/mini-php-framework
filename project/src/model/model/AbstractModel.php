@@ -183,17 +183,17 @@ abstract class AbstractModel
 		(
 			!empty($this->properties_data[$attribute_name]) &&
 			(
-				!$this->properties_data[$attribute_name]['is_primary'] ||
-				!$this->properties_data[$attribute_name]['is_auto_increment']
+				!$this->properties_data[$attribute_name]["is_primary"] ||
+				!$this->properties_data[$attribute_name]["is_auto_increment"]
 			) 
 		)
 		{
-			if($this->properties_data[$attribute_name]['cond'] != NULL)
+			if($this->properties_data[$attribute_name]["cond"] != NULL)
 			{
-				if($this->properties_data[$attribute_name]['cond']->is_valid($data) )
+				if($this->properties_data[$attribute_name]["cond"]->is_valid($data) || ($this->properties_data[$attribute_name]["is_primary"] && $data == NULL) )
 					return true;
 				else
-					return $this->properties_data[$attribute_name]['cond']->get_error_message();
+					return $this->properties_data[$attribute_name]["cond"]->get_error_message();
 			}
 			else return true;
 		}
@@ -262,7 +262,7 @@ abstract class AbstractModel
 				continue;
 
 			// check if the property is not initialized and is nullable
-			if($property_data["is_nullable"] && !isset($this->$property_name) )
+			if($property_data["is_nullable"] && (isset($this->$property_name) && $this->$property_name == NULL) )
 				continue;
 
 			// if the property is not initialized
@@ -319,6 +319,45 @@ abstract class AbstractModel
 			$conds = implode(" and ",$conds);
 
 			$query = $this->con->prepare("delete from $this->table_name where $conds");
+
+			return $query->execute($to_bind);
+		}
+		catch(PDOException){}
+
+		return false;
+	}
+
+	public function update():bool
+	{
+		try
+		{
+			$conds = [];
+			$to_set = [];
+			$to_bind = [];
+
+			foreach($this->properties_data as $property_name => $property_data)
+			{
+				// if the property is not initialized
+				if(!isset($this->$property_name) )
+					return false;
+
+				if($property_data["is_primary"])
+				{
+					array_push($conds,"{$this->properties_data[$property_name]["linked_col_name"]}=:primary_{$property_name}");
+					$to_bind[":primary_{$property_name}"] = $this->$property_name;
+				}
+
+				array_push($to_set,"{$this->properties_data[$property_name]["linked_col_name"]}=:{$property_name}");
+				$to_bind[":{$property_name}"] = $this->$property_name;
+			}
+
+			if(empty($to_set) || empty($conds) )
+				return false;
+
+			$to_set = implode(",",$to_set);
+			$conds = implode(" and ",$conds);
+
+			$query = $this->con->prepare("update $this->table_name set $to_set where $conds");
 
 			return $query->execute($to_bind);
 		}

@@ -24,11 +24,10 @@ class ArticleController extends AbstractController
 					->set_column("article_title",$_POST["article_title"])
 					->set_column("article_content",$_POST["article_content"]);
 
+				// example of transation use (you can just use crete method in this type of situation)
 				if(ArticleModel::begin_transation() )
 				{
-					$article->create();
-
-					if(ArticleModel::commit_transaction() )
+					if($article->create() && ArticleModel::commit_transaction() )
 						$this->redirect($this->route("Article:show_article",["article_name" => $article->get_column("article_title")]) );
 
 					ArticleModel::rollback_transaction();
