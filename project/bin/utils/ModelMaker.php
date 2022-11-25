@@ -20,7 +20,7 @@ abstract class ModelMaker extends AbstractCommand
 
 		// change name to correct format NameModel
 
-		$model_name = implode("",array_map(fn(string $part):string => ucfirst($part),explode("_",$model_name)) );
+		$model_name = implode("",array_map("ucfirst",explode("_",$model_name)) );
 
 		if(str_ends_with($model_name,"model") )
 			$model_name = str_replace("model","Model",$model_name);

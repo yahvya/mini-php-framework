@@ -30,7 +30,7 @@ abstract class FileHelper
 					break;
 				}
 
-				$result[trim($line_content[0])] = implode('=',array_slice($line_content,1) );
+				$result[strtolower(trim($line_content[0]) )] = implode('=',array_slice($line_content,1) );
 			}
 
 			fclose($file);

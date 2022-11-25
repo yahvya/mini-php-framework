@@ -59,4 +59,15 @@ class TableColumn
 	{
 		return $this->linked_col_name;
 	}
+
+	public function get_all():array
+	{
+		return [
+			"is_primary" => $this->get_is_primary(),
+			"is_nullable" => $this->get_is_nullable(),
+			"can_be_hashed" => $this->get_can_be_hashed(),
+			"is_auto_increment" => $this->get_is_auto_increment(),
+			"linked_col_name" => $this->get_linked_col_name()
+		];
+	}
 }

@@ -9,8 +9,11 @@ use \Sabo\Interface\ShowableInterface;
 use \Sabo\Interface\MaintenanceManagerInterface;
 
 use \Sabo\Helper\FileHelper;
+use \Sabo\Helper\WordHelper;
 
 use \Sabo\Custom\RouteCustomExtensions;
+
+use \Model\Model\AbstractModel;
 
 class Router
 {
@@ -19,7 +22,6 @@ class Router
 
 	// the router will look to config/routes.php and config/env_file
 	public function __construct(
-		int $config_file_type = self::JSON_ENV,
 		?ShowableInterface $internal_error_page_manager = NULL,
 		?ShowableInterface $page_not_found_manager = NULL,
 		?MaintenanceManagerInterface $maintenance_manager = NULL,
@@ -30,7 +32,7 @@ class Router
 
 		$config_file_content = NULL;
 
-		switch($config_file_type)
+		switch(CONFIG_FILE_TYPE)
 		{
 			case self::CLASSIC_ENV:
 				$config_file_content = FileHelper::convert_env_file_to_array(ROOT . "config/.env");
@@ -44,7 +46,7 @@ class Router
 			; break;
 		}
 
-		if(empty($config_file_content) || !isset($config_file_content['maintenance']) || !is_bool($config_file_content['maintenance']) )
+		if(empty($config_file_content) || !isset($config_file_content['maintenance']) || !WordHelper::check_bool($config_file_content['maintenance']) )
 			$this->internal_error($debug_mode,"Failed to read config file or missed maintenance state",$internal_error_page_manager);
 
 		$_ENV = $config_file_content;
@@ -63,6 +65,10 @@ class Router
 			}
 			else $this->show_default_page("Site en maintenance","Le site est actuellement en maintenance, il sera bientôt disponible !");
 		}
+
+		// try to init database connexion
+		if(!AbstractModel::init_con($debug_mode) )
+			$this->internal_error($debug_mode,"Failed to init database connexion",$internal_error_page_manager);
 
 		$routes = @include(ROOT . "config/routes.php");
 
