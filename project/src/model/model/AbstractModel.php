@@ -4,26 +4,34 @@ namespace Model\Model;
 
 use \PDO;
 use \PDOException;
-use \Exception;
 use \ReflectionClass;
-use \ReflectionAttribute;
 
 use \Sabo\Sabo\Router;
 
 use \Model\Attribute\TableColumn;
+use \Model\Attribute\TableName;
 
 use \Model\Exception\ModelException;
 
 use \Model\Cond\ColumnCond;
 
-// models are based on mysql
+/*
+	models are based on mysql (changege your engine to InnoDb engine to support transactions)
+	encapsulate model use with a try catch to prevent all ModelException
+*/
 abstract class AbstractModel 
 {
+	// pdo instance witch will be share to all models if don't give a con in construct
 	private static PDO $shared_con;
 
 	private static bool $debug_mode = false; 
 
+	private PDO $con;
+
 	private array $properties_data;
+	private array $primary_keys;
+
+	private string $table_name;
 
 	// called by router to init the shared con
 	public static function init_con(bool $debug_mode):bool
@@ -57,7 +65,7 @@ abstract class AbstractModel
 
 			default:
 				if(self::$debug_mode)
-					throw new Exception("Bad env format");
+					throw new ModelException("Bad env format",false);
 				else
 					return NULL;
 			;
@@ -68,6 +76,7 @@ abstract class AbstractModel
 			$con = new PDO("mysql:host={$host};dbname={$name}",$user,$password,[
 				PDO::ATTR_PERSISTENT => true,
 				PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
+				PDO::ERRMODE_EXCEPTION => self::$debug_mode,
 				PDO::MYSQL_ATTR_INIT_COMMAND => "set names utf8" 
 			]);
 
@@ -82,10 +91,56 @@ abstract class AbstractModel
 		return NULL;
 	}
 
+	// init the transaction with the shared
+	public static function begin_transation(?PDO $con = NULL):bool
+	{
+		try
+		{
+			return $con == NULL ? self::$shared_con->beginTransaction() : $con->beginTransaction();
+		}	
+		catch(PDOException){}
+
+		return false;
+	}
+
+	// commit the transaction with the shared con
+	public static function commit_transaction(?PDO $con = NULL):bool
+	{
+		try
+		{
+			return $con == NULL ? self::$shared_con->commit() : $con->commit();
+		}
+		catch(PDOException){}
+
+		return false;
+	}
+
+	// rollback the transaction with the shared con
+	public static function rollback_transaction(?PDO $con = NULL):bool
+	{
+		try
+		{
+			return $con == NULL ? self::$shared_con->rollBack() : $con->rollBack();
+		}
+		catch(PDOException){}
+
+		return false;
+	}	
+
 	// throw exception is model is badly formed
-	public function __construct()
+	public function __construct(?PDO $con = NULL)
 	{
 		$this->properties_data = [];
+		$this->primary_keys = [];
+
+		$reflection_class = new ReflectionClass($this);
+
+		$table_name_attribute = $reflection_class->getAttributes(TableName::class);
+
+		if(count($table_name_attribute) != 1)
+			throw new ModelException("Model must have one TableName attribute",false);
+
+		$this->table_name = $table_name_attribute[0]->newInstance()->get_table_name();
 
 		$reflection_class = new ReflectionClass($this);
 
@@ -98,22 +153,27 @@ abstract class AbstractModel
 			$count = count($column_attribute);
 
 			if($count > 1)
-				throw new Exception("The model can't have multiple TableColumn attribute");
+				throw new ModelException("The model can't have multiple TableColumn attribute",false);
 
 			if($count == 0)
 				continue;
 
 			$this->properties_data[$property_name] = $column_attribute[0]->newInstance()->get_all();
 
+			if($this->properties_data[$property_name]["is_primary"])
+				array_push($this->primary_keys,$property_name);
+
 			$conds_attribute = $reflection_property->getAttributes(ColumnCond::class);
 
 			$count = count($conds_attribute);
 
 			if($count > 1)
-				throw new Exception("The model can't have multiple ColumnCond attribute");
+				throw new ModelException("The model can't have multiple ColumnCond attribute",false);
 
 			$this->properties_data[$property_name]['cond'] =  $count == 0 ? NULL : $conds_attribute[0]->newInstance();
 		}
+
+		$this->con = $con == NULL ? self::$shared_con : $con;
 	}
 
 	// return false if try to valid an auto increment primary key, true if success or the error message from the failed cond
@@ -166,5 +226,70 @@ abstract class AbstractModel
 			return $this->$attribute_name;
 
 		return NULL;
+	}
+
+	// start a transaction with the given con in the construct (if null the shared con will be use)
+	public function begin_personnal_transation():bool
+	{
+		return self::begin_transation($this->con);
+	}
+
+	// commit a transaction with the given con in the construct (if null the shared con will be use)
+	public function commit_personnal_transation():bool
+	{
+		return self::commit_transaction($this->con);
+	}
+
+	// rollback a transaction with the given con in the construct (if null the shared con will be use)
+	public function rollback_personnal_transation():bool
+	{
+		return self::rollback_transaction($this->con);
+	}
+
+	/*
+		try to insert in database (if a transaction is not iniate it will execute definitively the request)
+		the table primary key will be set if not a composite primary key
+	*/
+	public function create():bool
+	{
+		$to_insert = [];
+		$markers = [];
+		$to_bind = [];
+
+		foreach($this->properties_data as $property_name => $property_data)
+		{
+			if($property_data["is_primary"] && $property_data["is_auto_increment"])
+				continue;
+
+			// check if the property is not initialized and is nullable
+			if($property_data["is_nullable"] && !isset($this->$property_name) )
+				continue;
+
+			// if the property is not initialized
+			if(!isset($this->$property_name) )
+				return false;
+
+			array_push($to_insert,$property_data["linked_col_name"]);
+			array_push($markers,":{$property_data["linked_col_name"]}");
+			$to_bind[":{$property_data["linked_col_name"]}"] = $this->$property_name;
+		}
+
+		$to_insert = implode(",",$to_insert);
+		$markers = implode(",",$markers);
+
+		$query = $this->con->prepare("insert into {$this->table_name}({$to_insert}) values({$markers})");
+		try
+		{
+			if($query->execute($to_bind) )
+			{
+				if(count($this->primary_keys) == 1)
+					$this->{$this->primary_keys[0]} = $this->con->lastInsertId();
+
+				return true;
+			}
+		}
+		catch(PDOException){}
+
+		return false;
 	}
 }

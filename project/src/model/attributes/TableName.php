@@ -16,6 +16,6 @@ class TableName
 
 	public function get_table_name():string
 	{
-		return $this->get_table_name();
+		return $this->table_name;
 	}
 }

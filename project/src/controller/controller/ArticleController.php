@@ -24,7 +24,17 @@ class ArticleController extends AbstractController
 					->set_column("article_title",$_POST["article_title"])
 					->set_column("article_content",$_POST["article_content"]);
 
-				$this->redirect($this->route("Article:show_article",["article_name" => "presentation-du-mini-framework"]) );
+				if(ArticleModel::begin_transation() )
+				{
+					$article->create();
+
+					if(ArticleModel::commit_transaction() )
+						$this->redirect($this->route("Article:show_article",["article_name" => $article->get_column("article_title")]) );
+
+					ArticleModel::rollback_transaction();
+				}
+
+				$this->render("article/creation_page.twig",["error_message" => "echec de la création de l'article"]);
 			}
 			catch(ModelException $e)
 			{
