@@ -277,6 +277,9 @@ abstract class AbstractModel
 		$to_insert = implode(",",$to_insert);
 		$markers = implode(",",$markers);
 
+		if(empty($to_insert) )
+			return false;
+
 		$query = $this->con->prepare("insert into {$this->table_name}({$to_insert}) values({$markers})");
 		try
 		{
@@ -287,6 +290,37 @@ abstract class AbstractModel
 
 				return true;
 			}
+		}
+		catch(PDOException){}
+
+		return false;
+	}
+
+	public function delete():bool
+	{
+		try
+		{
+			$conds = [];
+			$to_bind = [];
+
+			foreach($this->primary_keys as $primary_attribute)
+			{
+				// check if primary key is not initialized
+				if(!isset($this->$primary_attribute) )
+					return false;
+
+				array_push($conds,"{$this->properties_data[$primary_attribute]["linked_col_name"]} = :{$primary_attribute}");
+				$to_bind[":{$primary_attribute}"] = $this->$primary_attribute;
+			}
+
+			if(empty($conds) )
+				return false;
+
+			$conds = implode(" and ",$conds);
+
+			$query = $this->con->prepare("delete from $this->table_name where $conds");
+
+			return $query->execute($to_bind);
 		}
 		catch(PDOException){}
 
