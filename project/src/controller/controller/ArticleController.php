@@ -3,13 +3,28 @@
 namespace Controller\Controller;
 
 use \Model\Model\ArticleModel;
+
 use \Model\Exception\ModelException;
+
+use \PDOException;
 
 class ArticleController extends AbstractController
 {
-	public function show_article(mixed $article_name):void
+	public function show_article(mixed $article_title):void
 	{	
-		
+		try
+		{
+			$results = ArticleModel::find(["article_title" => $article_title],just_one: true,return_objects: false);
+
+			if(!empty($results) )
+				$view_data["article_data"] = $results[0];
+			else 
+				$view_data["error_message"] = "Article non trouvé";
+
+			$this->render("article/article.twig",$view_data);
+		}
+		catch(PDOException){}
+		catch(ModelException){}
 	}
 
 	public function create_article():void

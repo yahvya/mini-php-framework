@@ -16,7 +16,7 @@ use \Model\Exception\ModelException;
 use \Model\Cond\ColumnCond;
 
 /*
-	models are based on mysql (changege your engine to InnoDb engine to support transactions)
+	models are based on mysql (change your engine to InnoDb engine to support transactions)
 	encapsulate model use with a try catch to prevent all ModelException
 */
 abstract class AbstractModel 
@@ -132,12 +132,14 @@ abstract class AbstractModel
 		conds format -> [property => value] if cond if empty it will select * | keys will not be verifed
 		cannot return object if the fetch mode is set
 	*/
-	public function find(array $conditions = [],bool $return_objects = true,bool $just_one = false,bool $use_like = false,?int $fetch_mode = NULL):array
+	public static function find(array $conditions = [],bool $return_objects = true,string $order_by = "",bool $just_one = false,bool $use_like = false,?int $fetch_mode = NULL):array
 	{
-		if(__CLASS__ == self::class)
+		$class = get_called_class();
+
+		if($class == self::class)
 			return [];
 
-		$model_instance = (new ReflectionClass(__CLASS__))->newInstance();
+		$model_instance = (new ReflectionClass($class))->newInstance();
 
 		$result = [];
 
@@ -151,7 +153,7 @@ abstract class AbstractModel
 
 				foreach($conditions as $property_name => $condition_value)
 				{
-					if(!$use_like)
+					if($use_like)
 						array_push($conds,"{$model_instance->properties_data[$property_name]["linked_col_name"]} LIKE :{$property_name}");
 					else
 						array_push($conds,"{$model_instance->properties_data[$property_name]["linked_col_name"]}=:{$property_name}");
@@ -162,28 +164,28 @@ abstract class AbstractModel
 				$conds = implode(" and ",$conds);
 
 				if($just_one)
-					$query = self::$shared_con->prepare("select * {$model_instance->table_name} where $conds limit 1");
+					$query = self::$shared_con->prepare("select * from {$model_instance->table_name} where $conds $order_by limit 1");
 				else
-					$query = self::$shared_con->prepare("select * {$model_instance->table_name} where $conds");
+					$query = self::$shared_con->prepare("select * from {$model_instance->table_name} where $conds $order_by");
 			}
 			elseif($just_one)
-				$query = self::$shared_con->prepare("select * from {$model_instance->table_name} limit 1");
+				$query = self::$shared_con->prepare("select * from {$model_instance->table_name} $order_by limit 1");
 			else
-				$query = self::$shared_con->prepare("select * from {$model_instance->table_name}");
+				$query = self::$shared_con->prepare("select * from {$model_instance->table_name} $order_by");
 
 			if($query != false && $query->execute($to_bind) )
 			{
 				if($fetch_mode == NULL)
 				{
 					if($return_objects)
-						$result = array_map(fn(array $row_data):AbstractModel => __CLASS__::get_object_from_row($row_data),$query->fetchAll() );
+						$result = array_map(fn(array $row_data):AbstractModel => $class::get_object_from_row($row_data),$query->fetchAll() );
 					else 
 						$result = $query->fetchAll();
 				}
 				else $result = $query->fetchAll($fetch_mode);
 			}
 		}
-		catch(PDOException)
+		catch(PDOException $e)
 		{
 			$result = [];
 		}

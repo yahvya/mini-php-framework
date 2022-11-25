@@ -21,7 +21,7 @@ use \Controller\Controller\ArticleController;
 
 return Route::generate_from([
 	Route::group("article",[
-		Route::get("{article_name}/view",ArticleController::class,"show_article","Article:show_article"),
+		Route::get("{article_title}/view",ArticleController::class,"show_article","Article:show_article"),
 		Route::multiple("get,post","create",ArticleController::class,"create_article",["Article:creation_page","Article:confirm_creation"])
 	])
 ]);
