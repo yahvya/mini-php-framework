@@ -98,15 +98,15 @@ a model property have to
  
  Serialize models
  
- to serialize a model you have to user $model->get_serialized_version(); which will return the serialized version of your model after erasing unserializable elements (for example PDO and the columns you mark to erase before with serialize with the TableColumn attribute)
+ to serialize a model you have to use $model->get_serialized_version(); which will return the serialized version of your model after erasing unserializable elements (for example PDO and the columns you mark to erase before with serialize with the TableColumn attribute), your base model object will not change after 
  
- to unserialize a model use the static method AbstractModel::unserialize_model you add an array to replace some erased values
+ to unserialize a model use the static method AbstractModel::unserialize_model you can add an array to replace some erased values ["class_property_name" => "value_to_set"]
  
  Include private js
  
- via .htaccess js files which are located in views/templates/*/administrator/.js are accessible with url
+ via .htaccess, js files which are located in views/templates/*/administrator/.js are not accessible with url
  
- to include these js files in your view you have to set the third optionnal parameter of asset function to true -> asset("js","your_js_file",true)  
+ to include these js files in your view you have to set the third optionnal parameter of asset function to true -> {{ asset("js","your_js_file",true) }}  
  
  
  
