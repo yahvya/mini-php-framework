@@ -15,7 +15,7 @@ class ArticleModel extends AbstractModel
 	protected int $id;
 
 	#[
-		TableColumn("article_title","varchar:255"),
+		TableColumn("article_title","varchar:255",TableColumn::TO_ERASE_IN_SERIALIZE),
 		ColumnCond(new RegexCond("^.{5,40}$","Veuillez vérifier la longueur du titre") )
 	]
 	protected string $article_title;

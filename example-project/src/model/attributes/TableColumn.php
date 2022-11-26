@@ -11,6 +11,7 @@ class TableColumn
 	public const PRIMARY_KEY = 1;
 	public const NULLABLE = 2;
 	public const AUTO_INCREMENT = 3;
+	public const TO_ERASE_IN_SERIALIZE = 4;
 
 	private const HASHSABLE_TYPES = ["varchar","char","text"];
 
@@ -18,6 +19,7 @@ class TableColumn
 	private bool $is_nullable;	
 	private bool $can_be_hashed;
 	private bool $is_auto_increment;
+	private bool $is_serializable;
 
 	private string $linked_col_name;
 
@@ -33,13 +35,13 @@ class TableColumn
 		$this->is_nullable = !$this->is_primary && in_array(self::NULLABLE,$options);
 		$this->linked_col_name = $linked_col_name;
 		$this->can_be_hashed = in_array($col_data[0],self::HASHSABLE_TYPES);
+		$this->is_serializable = !in_array(self::TO_ERASE_IN_SERIALIZE,$options);
 	}
 
 	public function get_is_primary():bool
 	{
 		return $this->is_primary;
 	}
-
 	public function get_is_nullable():bool
 	{
 		return $this->is_nullable;
@@ -60,6 +62,11 @@ class TableColumn
 		return $this->linked_col_name;
 	}
 
+	public function get_is_serializable():bool
+	{
+		return $this->is_serializable;
+	}
+
 	public function get_all():array
 	{
 		return [
@@ -67,6 +74,7 @@ class TableColumn
 			"is_nullable" => $this->get_is_nullable(),
 			"can_be_hashed" => $this->get_can_be_hashed(),
 			"is_auto_increment" => $this->get_is_auto_increment(),
+			"is_serializable" => $this->get_is_serializable(),
 			"linked_col_name" => $this->get_linked_col_name()
 		];
 	}

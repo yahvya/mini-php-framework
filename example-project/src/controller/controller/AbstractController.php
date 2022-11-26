@@ -51,7 +51,7 @@ abstract class AbstractController
 		die($this->twig_environment->render($file,$view_data));
 	}
 
-	protected function redirect(string $link = "/"):void
+	protected function redirect(string $link = "/"):never
 	{
 		if($link[0] != "/")
 			$link = "/{$link}";

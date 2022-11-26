@@ -17,7 +17,7 @@ use \Model\Cond\ColumnCond;
 
 /*
 	models are based on mysql (change your engine to InnoDb engine to support transactions)
-	encapsulate model use with a try catch to prevent all ModelException
+	encapsulate all model use with a try catch to prevent all ModelException
 */
 abstract class AbstractModel 
 {
@@ -91,7 +91,7 @@ abstract class AbstractModel
 		return NULL;
 	}
 
-	// init the transaction with the shared
+	// init the transaction with the shared con
 	public static function begin_transation(?PDO $con = NULL):bool
 	{
 		try
@@ -193,7 +193,29 @@ abstract class AbstractModel
 		return $result;
 	}
 
-	// throw exception is model is badly formed
+	/*
+		unserialize a model which you this->serialize model, return the model on success or null
+		datas to replace format -> ["class_property" => data_to_replace]
+		can throw modelexception
+	*/
+	public static function unserialize_model(string $serialized_version,array $datas_to_replace_in = [],?PDO $model_con = NULL):?AbstractModel
+	{
+		$model = unserialize($serialized_version);
+
+		if(is_object($model) && is_subclass_of($model,self::class) )
+		{
+			$model->con = $model_con == NULL ? self::$shared_con : $model_con;
+
+			foreach($datas_to_replace_in as $property_name => $value)
+				$model->set_column($property_name,$value);
+
+			return $model;
+		}
+
+		return NULL;
+	}
+
+	// throw exception if the model is badly formed
 	public function __construct(?PDO $con = NULL)
 	{
 		$this->properties_data = [];
@@ -437,6 +459,33 @@ abstract class AbstractModel
 	{
 		$this->con = $con;
 	}
+
+	// serialize the model and return it if you have fields to remove which are not tablecolumn you can override this method to remove them and call the parent method
+	public function get_serialized_version():string
+	{
+		// removes elements which have to be remove based on table column attribute
+
+		$to_replace = ["con" => $this->con];
+
+		unset($this->con);
+
+		foreach($this->properties_data as $property_name => $property_data)
+		{
+			if(!$property_data["is_serializable"])
+			{
+				$to_replace[$property_name] = $this->$property_name;
+
+				unset($this->$property_name);
+			}
+		}
+
+		$serialized_string = serialize($this);
+
+		foreach($to_replace as $property_name => $value)
+			$this->$property_name = $value;
+
+		return $serialized_string;
+	}	
 
 	// abstract functions
 
