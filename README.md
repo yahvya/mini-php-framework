@@ -96,6 +96,18 @@ a model property have to
  
  define("CONFIG_FILE_TYPE",Router::JSON_ENV) to define("CONFIG_FILE_TYPE",Router::CLASSIC_ENV);
  
+ Serialize models
+ 
+ to serialize a model you have to user $model->get_serialized_version(); which will return the serialized version of your model after erasing unserializable elements (for example PDO and the columns you mark to erase before with serialize with the TableColumn attribute)
+ 
+ to unserialize a model use the static method AbstractModel::unserialize_model you add an array to replace some erased values
+ 
+ Include private js
+ 
+ via .htaccess js files which are located in views/templates/*/administrator/.js are accessible with url
+ 
+ to include these js files in your view you have to set the third optionnal parameter of asset function to true -> asset("js","your_js_file",true)  
+ 
  
  
  
