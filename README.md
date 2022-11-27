@@ -12,14 +12,6 @@ to start a new project with the stable version
   sudo rm -r .git 
   
   git init
-  
-  composer install
-  
-  cd bin
-  
-  composer install
-  
-  cd ../
 
 SABO
 
