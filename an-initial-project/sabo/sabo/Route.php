@@ -6,7 +6,7 @@ use \Exception;
 
 abstract class Route
 {
-	public const AUTHORIZED_METHODS = ["get","post","put"];
+	public const AUTHORIZED_METHODS = ["get","post","put","delete"];
 
 	public static function get(string $route,string $controller_class,string $method_name,string $route_name):array
 	{
@@ -21,6 +21,11 @@ abstract class Route
 	public static function put(string $route,string $controller_class,string $method_name,string $route_name):array
 	{
 		return self::get_route_from("put",$route,$controller_class,$method_name,$route_name);
+	}
+	
+	public static function delete(string $route,string $controller_class,string $method_name,string $route_name):array
+	{
+		return self::get_route_from("delete",$route,$controller_class,$method_name,$route_name);
 	}
 
 	public static function multiple(string $methods,string $route,string $controller_class,string $method_name,array $route_names):array
@@ -78,7 +83,8 @@ abstract class Route
 			"routes" => [
 				"post" => [],
 				"get" => [],
-				"put" => []
+				"put" => [],
+				"delete" => []
 			] 
 		];
 
@@ -92,6 +98,7 @@ abstract class Route
 				$results["routes"]["post"] = array_merge($results["routes"]["post"],$result["routes"]["post"]);
 				$results["routes"]["get"] = array_merge($results["routes"]["get"],$result["routes"]["get"]);
 				$results["routes"]["put"] = array_merge($results["routes"]["put"],$result["routes"]["put"]);
+				$results["routes"]["delete"] = array_merge($results["routes"]["delete"],$result["routes"]["delete"]);
 			}
 			else
 			{
