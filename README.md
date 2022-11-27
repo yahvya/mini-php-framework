@@ -3,7 +3,7 @@ mini php framework require php 8, see the example_project to see an example of u
 
 to start a new project with the stable version
 
-mkdir my_project
+  mkdir my_project
 
   cd my_project
 
@@ -11,7 +11,15 @@ mkdir my_project
 
   sudo rm -r .git 
   
-  git init .
+  git init
+  
+  composer install
+  
+  cd bin
+  
+  composer install
+  
+  cd ../
 
 SABO
 
