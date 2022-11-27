@@ -5,9 +5,13 @@ to start a new project with the stable version
 
 mkdir my_project
 
-cd my_project
+  cd my_project
 
-git clone https://github.com/yahvya/sabo-framework .
+  git clone https://github.com/yahvya/sabo-framework .
+
+  sudo rm -r .git 
+  
+  git init .
 
 SABO
 
