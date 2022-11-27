@@ -43,7 +43,7 @@ class ArticleController extends AbstractController
 				if(ArticleModel::begin_transation() )
 				{
 					if($article->create() && ArticleModel::commit_transaction() )
-						$this->redirect($this->route("Article:show_article",["article_name" => $article->get_column("article_title")]) );
+						$this->redirect($this->route("Article:show_article",["article_title" => $article->get_column("article_title")]) );
 
 					ArticleModel::rollback_transaction();
 				}
