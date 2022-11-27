@@ -3,7 +3,11 @@ mini php framework require php 8, see the example_project to see an example of u
 
 to start a new project with the stable version
 
-git clone https://github.com/yahvya/sabo-framework
+mkdir my_project
+
+cd my_project
+
+git clone https://github.com/yahvya/sabo-framework .
 
 SABO
 
