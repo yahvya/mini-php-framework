@@ -12,6 +12,8 @@ to start a new project with the stable version
   sudo rm -r .git 
   
   git init
+  
+ to use mailer if an error occured try composer require phpmailer/phpmailer
 
 SABO
 
