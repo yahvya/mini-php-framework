@@ -2,6 +2,8 @@
 
 namespace Controller\Controller;
 
+use Middleware\Exception\MiddlewareException;
+use Middleware\Middleware\ArticleMiddleware;
 use \Model\Model\ArticleModel;
 
 use \Model\Exception\ModelException;
@@ -33,32 +35,27 @@ class ArticleController extends AbstractController
 		{
 			try
 			{
-				$article = new ArticleModel();
+				// exemple de remplacement d'un message par défaut
+				$article_mdw = new ArticleMiddleware([
+					MiddlewareException::MISSED_DATA => "Veuillez vérifier les données saisies ;)"
+				]);	
 
-				$article
-					->set_column("article_title",$_POST["article_title"])
-					->set_column("article_content",$_POST["article_content"]);
-
-				// example of transation use (you can just use crete method in this type of situation)
-				if(ArticleModel::begin_transation() )
-				{
-					if($article->create() && ArticleModel::commit_transaction() )
-						$this->redirect($this->route("Article:show_article",["article_title" => $article->get_column("article_title")]) );
-
-					ArticleModel::rollback_transaction();
-				}
-
-				$this->render("article/creation_page.twig",["error_message" => "echec de la création de l'article"]);
+				$article_mdw->create_article();
 			}
-			catch(ModelException $e)
+			catch(MiddlewareException $e)
 			{
-				if($e->is_displayable() )
-					$this->render("article/creation_page.twig",["error_message" => $e->getMessage()]);
-				else
-					die("check your code");
+				$this->set_flash_data("Article:creation_error",$e->is_displayable() ? $e->getMessage() : "Erreur veuillez retenter");
 			}
+
+			$this->redirect($this->route("Article:creation_page") );
 		}
-		else $this->render("article/creation_page.twig");
+		else 
+		{
+			$this->render("article/creation_page.twig",[
+				"error_message" => $this->get_flash_data("Article:creation_error"),
+				"success_message" => $this->get_flash_data("Article:creation_success"),
+			]);
+		}
 	}
 }
 

@@ -8,6 +8,9 @@
 
 {% block body %}
 	<p class="error">{{ error_message }}</p>
+
+	<p>{{ success_message }}</p>
+
 	<form method="post" action="{{ route("Article:confirm_creation") }}">
 		<input type="text" name="article_title" placeholder="Titre de l'article" required>
 		<textarea name="article_content" placeholder="Contenu de l'article" required></textarea>

@@ -11,6 +11,10 @@
 		<p>{{ error_message }}</p>
 	{% endif %}
 
+	{% if success_message %}
+		<p>{{ success_message }}</p>
+	{% endif %}
+
 	{% if article_data %}
 		<p>Titre : {{ article_data.article_title }}</p>
 		<p>Contenu : {{ article_data.article_content }}</p>
